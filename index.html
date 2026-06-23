@@ -3,415 +3,397 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>그 날 밤, 우리들의 배움은 거리에서 횃불이 되었다</title>
+    <title>역사적 결단: 그날 밤 우리들의 횃불</title>
     <style>
+        :root {
+            --bg-main: #0d0e12;
+            --bg-card: #161823;
+            --bg-input: #1f2235;
+            --primary: #ff4a4a;
+            --primary-hover: #ff6b6b;
+            --accent: #ffd23f;
+            --text-main: #f5f6fa;
+            --text-muted: #9aa0b7;
+            --border: #2b2f44;
+        }
+
         body {
-            font-family: 'Malgun Gothic', sans-serif;
-            background-color: #121212;
-            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            padding: 20px;
             box-sizing: border-box;
+            overflow-x: hidden;
+            position: relative;
         }
-        
+
+        /* 클릭 이펙트 */
+        .click-effect {
+            position: absolute;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            background: rgba(255, 74, 74, 0.1);
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(0);
+            animation: click-ripple 0.5s ease-out;
+            z-index: 9999;
+        }
+
+        @keyframes click-ripple {
+            to {
+                transform: translate(-50%, -50%) scale(1);
+                width: 60px;
+                height: 60px;
+                opacity: 0;
+            }
+        }
+
         #main-layout {
             display: flex;
-            flex-direction: row;
-            gap: 25px;
+            gap: 30px;
             width: 100%;
-            max-width: 1200px;
-            align-items: flex-start;
+            max-width: 1100px;
         }
 
         #game-container {
-            flex: 1.4;
-            background-color: #1a1a1a;
-            padding: 35px;
-            border-radius: 15px;
-            box-shadow: 0px 10px 30px rgba(0,0,0,0.7);
-            border: 2px solid #2d2d2d;
-            min-height: 580px;
+            flex: 1.3;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            min-height: 550px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         #info-container {
             flex: 0.7;
-            background-color: #1c1c1c;
-            padding: 25px;
-            border-radius: 15px;
-            border: 2px solid #2d2d2d;
-            box-shadow: 0px 5px 20px rgba(0,0,0,0.5);
+            background: rgba(22, 24, 35, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            height: fit-content;
         }
 
-        h1.main-title { font-size: 24px; color: #f1f1f1; line-height: 1.4; margin-bottom: 5px; text-align: center; }
-        h2.sub-title { font-size: 15px; color: #ae3838; margin-top: 0; letter-spacing: 2px; text-align: center; }
+        /* 타이틀 & 인트로 */
+        .main-title { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 10px; line-height: 1.3; }
+        .sub-title { font-size: 14px; color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; }
         
-        .intro-description {
-            font-size: 15px; line-height: 1.7; color: #cccccc; margin: 25px 0; text-align: justify;
-            background: #222; padding: 15px; border-left: 4px solid #ae3838; border-radius: 4px; word-break: keep-all;
+        .intro-desc {
+            font-size: 15px; color: var(--text-muted); line-height: 1.8; margin-bottom: 40px;
+            background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; border-left: 4px solid var(--primary);
         }
 
-        .screen { display: none; }
-        .active { display: block; }
+        .screen { display: none; opacity: 0; transition: opacity 0.4s ease; }
+        .screen.active { display: block; }
+        .screen.fade-in { opacity: 1; }
 
-        #intro-screen { text-align: center; }
-        #start-game-btn {
-            background-color: #ae3838; font-weight: bold; font-size: 18px; padding: 18px 40px;
-            color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+        /* 공통 버튼 */
+        .btn-primary {
+            background: var(--primary); color: #fff; font-size: 16px; font-weight: 700;
+            padding: 16px 32px; border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s;
         }
-        #start-game-btn:hover { background-color: #d14343; box-shadow: 0 0 15px rgba(209,67,67,0.4); }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,74,74,0.3); }
 
-        /* 인물 선택 카드 스타일 */
-        .selection-title { font-size: 26px; font-weight: bold; margin-bottom: 5px; text-align: center; color: #fff; }
-        .selection-subtitle { font-size: 14px; color: #888; margin-bottom: 30px; text-align: center; }
-        .card-wrapper { display: flex; gap: 15px; justify-content: center; }
-        
+        /* 캐릭터 선택 카드 */
+        .card-grid { display: flex; gap: 16px; margin-top: 30px; }
         .char-card {
-            flex: 1; background-color: #161616; border: 1px solid #333; border-radius: 12px;
-            padding: 20px; text-align: left; display: flex; flex-direction: column; justify-content: space-between;
-            transition: all 0.3s; cursor: pointer; position: relative;
+            flex: 1; background: var(--bg-input); border: 1px solid var(--border); border-radius: 14px;
+            padding: 24px; cursor: pointer; transition: all 0.25s ease; display: flex; flex-direction: column; justify-content: space-between;
         }
-        .char-card:hover { border-color: #ae3838; transform: translateY(-5px); background-color: #1f1f1f; }
-        
-        .card-badge { position: absolute; top: 15px; right: 15px; font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
-        .badge-red { background-color: rgba(174,56,56,0.2); color: #ff6b6b; }
-        .badge-yellow { background-color: rgba(212,175,55,0.2); color: #ffd23f; }
-        .badge-blue { background-color: rgba(52,152,219,0.2); color: #3498db; }
+        .char-card:hover { border-color: var(--primary); transform: translateY(-4px); background: #25293e; }
+        .char-name { font-size: 20px; font-weight: 700; margin: 12px 0 6px 0; }
+        .char-meta { font-size: 13px; color: var(--accent); margin-bottom: 12px; }
+        .char-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
 
-        .card-icon { width: 40px; height: 40px; background: #262626; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px; margin-bottom: 15px; }
-        .card-name { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
-        .card-sub { font-size: 13px; color: #888; margin-bottom: 15px; }
-        .card-desc { font-size: 13px; color: #bbb; line-height: 1.6; margin-bottom: 20px; word-break: keep-all; }
-        .card-action { font-size: 14px; font-weight: bold; }
-        .action-red { color: #ff6b6b; } .action-yellow { color: #ffd23f; } .action-blue { color: #3498db; }
+        /* 대시보드 헤더 */
+        .game-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
+        .status-group { display: flex; gap: 24px; }
+        .gauge-container { width: 120px; }
+        .gauge-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+        .gauge-bar { height: 6px; background: #2b2f44; border-radius: 3px; overflow: hidden; }
+        .gauge-fill { height: 100%; background: var(--primary); width: 50%; transition: width 0.4s ease; }
+        .gauge-fill.survival { background: #10ac84; }
 
-        /* 상단 실시간 헤더 및 바 */
-        #game-header {
-            display: flex; justify-content: space-between; align-items: center;
-            background: #222; padding: 15px 20px; border-radius: 10px; margin-bottom: 25px; border: 1px solid #333;
+        /* 텍스트 박스 (타이핑 연출) */
+        #text-box { font-size: 17px; line-height: 1.8; color: #fff; min-height: 100px; margin-bottom: 40px; }
+
+        /* 선택지 버튼 리스트 */
+        .choice-btn {
+            display: block; width: 100%; background: var(--bg-input); border: 1px solid var(--border);
+            color: var(--text-main); padding: 18px 24px; border-radius: 12px; font-size: 15px; text-align: left;
+            cursor: pointer; margin-bottom: 12px; transition: all 0.2s;
         }
-        .header-info-box { text-align: left; }
-        .header-meta { font-size: 12px; color: #aaa; margin-bottom: 3px; }
-        .header-title { font-size: 18px; font-weight: bold; color: #ffd23f; }
-        
-        .header-status-box { display: flex; gap: 20px; align-items: center; }
-        .gauge-group { display: flex; flex-direction: column; width: 130px; }
-        .gauge-label { font-size: 12px; font-weight: bold; margin-bottom: 4px; display: flex; justify-content: space-between; }
-        .gauge-bg { width: 100%; height: 8px; background: #333; border-radius: 4px; overflow: hidden; }
-        .gauge-fill { height: 100%; width: 50%; transition: width 0.4s ease; }
-        .fill-patriotism { background: #ff6b6b; }
-        .fill-survival { background: #2ecc71; }
+        .choice-btn:hover { border-color: var(--accent); background: #25293e; transform: translateX(4px); }
 
-        #text-box { font-size: 17px; line-height: 1.7; margin-bottom: 30px; min-height: 120px; word-break: keep-all; text-align: left; }
-        .btn {
-            display: block; width: 100%; padding: 16px; margin-bottom: 12px;
-            background-color: #2a2a2a; color: white; border: 1px solid #444;
-            border-radius: 8px; font-size: 15px; cursor: pointer; text-align: left; transition: all 0.2s;
+        /* 배움 노트 양식 */
+        .notebook { background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-top: 20px; }
+        .notebook h3 { margin-top: 0; color: var(--accent); }
+        .notebook textarea {
+            width: 100%; background: var(--bg-main); border: 1px solid var(--border); border-radius: 8px;
+            color: #fff; padding: 14px; box-sizing: border-box; font-size: 14px; resize: none; margin: 15px 0;
         }
-        .btn:hover { background-color: #363636; border-color: #ffd23f; }
-        .system-btn { background-color: #ae3838; text-align: center; font-weight: bold; }
-        .system-btn:hover { background-color: #d14343; }
 
-        /* 정보창 폰트 강조 레이아웃 */
-        .info-header { font-size: 15px; line-height: 1.6; color: #dddddd; margin-bottom: 20px; word-break: keep-all; text-align: left; }
-        .info-tab-title { font-size: 16px; font-weight: bold; color: #ff6b6b; border-bottom: 2px solid #ff6b6b; padding-bottom: 6px; margin-top: 25px; margin-bottom: 12px; text-align: left; }
-        .info-tab-title:first-of-type { margin-top: 0; }
-        .info-content { font-size: 14px; line-height: 1.6; color: #ccc; text-align: left; }
-        .info-content ol { padding-left: 20px; margin: 0; }
-        .info-content li { margin-bottom: 12px; word-break: keep-all; }
-        
-        .highlight-main { color: #ffd23f; font-weight: bold; } 
-        .highlight-sub { color: #ff6b6b; font-weight: bold; }  
-        .highlight-point { color: #3498db; font-weight: bold; } 
+        /* 오른쪽 정보창 텍스트 정돈 */
+        .info-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .info-list { padding-left: 20px; color: var(--text-muted); font-size: 14px; line-height: 1.8; }
+        .info-list li { margin-bottom: 10px; }
+        .highlight { color: var(--accent); font-weight: 600; }
 
-        @media (max-width: 900px) {
+        @media(max-width: 850px) {
             #main-layout { flex-direction: column; }
-            .card-wrapper { flex-direction: column; }
+            .card-grid { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
 <div id="main-layout">
-    
-    <!-- 왼쪽 영역 -->
     <div id="game-container">
         
-        <!-- 인트로 화면 -->
-        <div id="intro-screen" class="screen active">
-            <h2 class="sub-title">학생독립운동 추체험 가상게임</h2>
-            <h1 class="main-title">그 날 밤, 우리들의 배움은<br>거리에서 횃불이 되었다</h1>
-            <div class="intro-description">
-                나라를 빼앗겨 숨죽여야 했던 어둠의 시대. 펜을 쥔 손으로 태극기를 펼치고, 차별과 억압에 맞서 거리를 불꽃으로 뒤덮었던 청춘들의 뜨거운 기록. 역사적 인물의 실제 결단들을 마주하고, 당신만의 응답을 역사에 남겨보십시오.
+        <div id="screen-intro" class="screen active fade-in">
+            <div class="sub-title">History 추체험 시뮬레이션</div>
+            <div class="main-title">그날 밤, 우리들의 배움은<br>거리에서 횃불이 되었다</div>
+            <div class="intro-desc">
+                일제강점기 암흑의 시대, 펜을 던지고 스스로 거리에 서서 세상을 바꿨던 청춘들의 실제 발자취를 따라갑니다. 당신은 그 역사의 한복판에서 어떤 선택을 내리시겠습니까?
             </div>
-            <button id="start-game-btn" onclick="goSelection()">역사의 현장으로 뛰어들기</button>
+            <button class="btn-primary" onclick="navigate('screen-select')">시작하기</button>
         </div>
 
-        <!-- 인물 선택 화면 -->
-        <div id="selection-screen" class="screen">
-            <div class="selection-title">추체험할 역사적 의사(義士) 선택</div>
-            <div class="selection-subtitle">실제 일제치하의 대표적인 학생독립운동을 주도한 인물이 되어 세상을 바꿀 선택을 준비하세요.</div>
+        <div id="screen-select" class="screen">
+            <div class="main-title" style="font-size: 24px;">인물 선택</div>
+            <div style="color: var(--text-muted); font-size: 14px;">추체험할 당시의 인물을 선택하세요.</div>
             
-            <div class="card-wrapper">
-                <div class="char-card" onclick="startCampaign('유관순')">
-                    <div class="card-badge badge-red">1919년 3·1운동</div>
+            <div class="card-grid">
+                <div class="char-card" onclick="selectChar('유관순')">
                     <div>
-                        <div class="card-icon">📜</div>
-                        <div class="card-name">열사 유관순</div>
-                        <div class="card-sub">이화학당 고등과 (당시 18세)</div>
-                        <div class="card-desc">경성의 만세 물결을 마주하고 고향 아우내로 내려가 봉화를 올린 불굴의 상징. 가혹한 옥중에서도 평화와 정의의 외침을 멈추지 않은 찬란한 생애를 따릅니다.</div>
+                        <div style="font-size: 28px;">📜</div>
+                        <div class="char-name">열사 유관순</div>
+                        <div class="char-meta">1919년 3·1 운동</div>
                     </div>
-                    <div class="card-action action-red">이 횃불을 밝히기 ＞</div>
+                    <div class="char-desc">이화학당 휴교령 이후 독립선언서를 안고 천안 고향으로 내려가 아우내 만세 운동을 이끈 굳은 의지.</div>
                 </div>
-
-                <div class="char-card" onclick="startCampaign('이선호')">
-                    <div class="card-badge badge-yellow">1926년 6·10만세운동</div>
+                <div class="char-card" onclick="selectChar('이선호')">
                     <div>
-                        <div class="card-icon">🖨️</div>
-                        <div class="card-name">지도자 이선호</div>
-                        <div class="card-sub">조선학생과학연구회 회장 (당시 22세)</div>
-                        <div class="card-desc">순종 황제의 승하 속에서 이념을 초월한 대동단결의 연대망을 구축한 청년 조직가. 거대한 군중 속에서 최초의 불을 붙인 치밀함과 담대함의 이야기.</div>
+                        <div style="font-size: 28px;">🖨️</div>
+                        <div class="char-name">지도자 이선호</div>
+                        <div class="char-meta">1926년 6·10 만세운동</div>
                     </div>
-                    <div class="card-action action-yellow">이 횃불을 밝히기 ＞</div>
+                    <div class="char-desc">조선학생과학연구회 회장으로서 순종 인산일에 맞추어 격문을 제작하고 대규모 격동을 기획한 조직가.</div>
                 </div>
-
-                <div class="char-card" onclick="startCampaign('박준채')">
-                    <div class="card-badge badge-blue">1929년 광주학생독립운동</div>
+                <div class="char-card" onclick="selectChar('박준채')">
                     <div>
-                        <div class="card-icon">🚊</div>
-                        <div class="card-name">학생 박준채</div>
-                        <div class="card-sub">광주고등보통학교 5학년 (당시 18세)</div>
-                        <div class="card-desc">통학 열차 안의 민족 차별적 희롱에 저항해 거대한 의기의 돌팔매를 던진 의기 청년. 일제의 편파적 수사에 맞서 전국적 연대 휴학을 일으킨 도화선.</div>
+                        <div style="font-size: 28px;">🚊</div>
+                        <div class="char-name">학생 박준채</div>
+                        <div class="char-meta">1929년 광주학생독립운동</div>
                     </div>
-                    <div class="card-action action-blue">이 횃불을 밝히기 ＞</div>
+                    <div class="char-desc">나주역 통학 열차 안에서 조선인 여학생을 희롱하는 일본인 학생들에 맞서 민족적 의기를 던진 청년.</div>
                 </div>
             </div>
         </div>
 
-        <!-- 플레이 화면 -->
-        <div id="play-screen" class="screen">
-            <div id="game-header">
-                <div class="header-info-box">
-                    <div id="header-era" class="header-meta">시대 정보</div>
-                    <div id="header-name" class="header-title">선택된 인물</div>
+        <div id="screen-play" class="screen">
+            <div class="game-header">
+                <div>
+                    <div id="display-era" style="font-size: 12px; color: var(--text-muted);">시대</div>
+                    <div id="display-name" style="font-size: 18px; font-weight: 700; margin-top: 2px;">이름</div>
                 </div>
-                <div class="header-status-box">
-                    <div class="gauge-group">
-                        <div class="gauge-label"><span>🇰🇷 애국심</span><span id="txt-patriotism">50%</span></div>
-                        <div class="gauge-bg"><div id="bar-patriotism" class="gauge-fill fill-patriotism"></div></div>
+                <div class="status-group">
+                    <div class="gauge-container">
+                        <div class="gauge-label"><span>애국심</span><span id="val-patriot">50%</span></div>
+                        <div class="gauge-bar"><div id="bar-patriot" class="gauge-fill"></div></div>
                     </div>
-                    <div class="gauge-group">
-                        <div class="gauge-label"><span>❤️ 생존력</span><span id="txt-survival">100%</span></div>
-                        <div class="gauge-bg"><div id="bar-survival" class="gauge-fill fill-survival"></div></div>
+                    <div class="gauge-container">
+                        <div class="gauge-label"><span>생존력</span><span id="val-survive">100%</span></div>
+                        <div class="gauge-bar"><div id="bar-survive" class="gauge-fill survival"></div></div>
                     </div>
                 </div>
             </div>
-            <div id="text-box">스토리 불러오는 중...</div>
-            <div id="choices-box"></div>
+            <div id="text-box"></div>
+            <div id="choices-container"></div>
         </div>
 
     </div>
 
-    <!-- 오른쪽 정보창 영역 -->
     <div id="info-container">
-        <div class="info-header">
-            본 게임은 조국의 자주 독립을 위해 분연히 일어섰던 학생 주도의 3대 역사적 독립운동을 바탕으로 제작된 교과 학습용 <span class="highlight-main">역사 추체험 가상 게임</span>입니다.
-        </div>
-        
-        <div class="info-tab-title">📋 게임 규칙 안내</div>
-        <div class="info-content">
-            <ol>
-                <li><span class="highlight-main">캠페인 선택:</span> <span class="highlight-sub">3‧1운동(유관순)</span>, <span class="highlight-sub">6‧10 만세운동(이선호)</span>, <span class="highlight-sub">광주학생독립운동(박준채)</span> 중 하나를 선택해 당시 실존 인물들의 상황에 완벽히 이입합니다.</li>
-                <li><span class="highlight-main">가상지표:</span> 도덕적/전략적 선택에 따라 <span class="highlight-point">애국심</span>과 <span class="highlight-point">생존력</span>이 실시간으로 역동적으로 움직입니다.</li>
-                <li><span class="highlight-main">불굴의 의지 극복:</span> <span class="highlight-point">생존력이 0%</span>에 이르더라도 동지들의 숭고한 헌신, 자전적인 결의를 통해 <span class="highlight-main">다시 회생</span>하여 시나리오를 끝까지 이수할 수 있습니다.</li>
-                <li><span class="highlight-main">성찰 및 기록:</span> 모든 역사적 여정이 끝난 뒤, 마지막 <span class="highlight-point">배움 노트</span>에 여러분만의 느낀 점과 명언을 작성해보세요.</li>
-            </ol>
-        </div>
+        <div class="info-title">💡 학습 안내</div>
+        <ul class="info-list">
+            <li>역사 속 실존 인물이 겪었던 <span class="highlight">실제 사건</span>에 기반해 진행됩니다.</li>
+            <li>선택에 따라 <span class="highlight">애국심</span>과 <span class="highlight">생존 지표</span>가 다이나믹하게 변동합니다.</li>
+            <li>생존력이 0%가 되면 동지들의 외침으로 각성하는 <span class="highlight">불굴의 의지(회생)</span> 시스템이 발동됩니다.</li>
+        </ul>
     </div>
-
 </div>
 
 <script>
-    let patriotism = 50;
-    let survival = 100;
-    let currentCharacter = "";
+    let pScore = 50;
+    let sScore = 100;
+    let selectedHero = "";
+    let cachedNext = "";
 
-    function showScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
-    }
+    // 화면 클릭 파장 효과
+    document.addEventListener('click', (e) => {
+        const rip = document.createElement('div');
+        rip.className = 'click-effect';
+        document.body.appendChild(rip);
+        rip.style.left = `${e.pageX}px`;
+        rip.style.top = `${e.pageY}px`;
+        rip.addEventListener('animationend', () => rip.remove());
+    });
 
-    function goSelection() { showScreen('selection-screen'); }
-
-    function startCampaign(charName) {
-        currentCharacter = charName;
-        patriotism = 50;
-        survival = 100;
-
-        const eraEl = document.getElementById('header-era');
-        const nameEl = document.getElementById('header-name');
-
-        if(charName === '유관순') {
-            eraEl.innerText = "1919년 3·1운동";
-            nameEl.innerText = "열사 유관순";
-        } else if(charName === '이선호') {
-            eraEl.innerText = "1926년 6·10만세운동";
-            nameEl.innerText = "지도자 이선호";
+    // 부드러운 화면 전환
+    function navigate(id) {
+        const current = document.querySelector('.screen.active');
+        const target = document.getElementById(id);
+        if(current) {
+            current.classList.remove('fade-in');
+            setTimeout(() => {
+                current.classList.remove('active');
+                target.classList.add('active');
+                setTimeout(() => target.classList.add('fade-in'), 50);
+            }, 300);
         } else {
-            eraEl.innerText = "1929년 광주학생독립운동";
-            nameEl.innerText = "학생 박준채";
+            target.classList.add('active');
+            setTimeout(() => target.classList.add('fade-in'), 50);
         }
-
-        showScreen('play-screen');
-        updatePage('start');
     }
 
-    // 🌟 인물별 완전 독립형 고유 시나리오 데이터베이스
-    const campaignStories = {
+    function selectChar(name) {
+        selectedHero = name;
+        pScore = 50; sScore = 100;
+        document.getElementById('display-name').innerText = name;
+        document.getElementById('display-era').innerText = name === '유관순' ? '1919 3·1운동' : name === '이선호' ? '1926 6·10만세운동' : '1929 광주학생독립운동';
+        navigate('screen-play');
+        setTimeout(() => renderScene('start'), 350);
+    }
+
+    // 바이브코딩 감성의 타이핑 효과 연출
+    function typeEffect(element, text, delay = 20, callback) {
+        element.innerHTML = "";
+        let i = 0;
+        function typing() {
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(typing, delay);
+            } else if (callback) {
+                callback();
+            }
+        }
+        typing();
+    }
+
+    const stories = {
         '유관순': {
             start: {
-                text: "1919년 3월, 탑골공원에서 울려 퍼진 만세 소리가 전국으로 퍼집니다. 이화학당의 휴교령이 내려지자, 당신은 사촌 언니와 함께 독립선언서를 품에 숨긴 채 고향 천안 아우내로 내려왔습니다. 마을 사람들에게 어떻게 거사를 제안하겠습니까?",
+                text: "이화학당에 강제 휴교령이 내렸습니다. 당신은 사촌 언니와 함께 밤새 독립선언서를 등사하여 품에 숨긴 채 고향 천안 아우내로 내려왔습니다. 거사를 도모하기 위해 가장 먼저 취할 행동은 무엇입니까?",
                 options: [
-                    { text: "일경의 눈을 피해 밤마다 마을 어른들을 찾아가 만세 시위의 당위성을 설명하고 설득한다.", next: "y_step2", p: 20, s: -15 },
-                    { text: "비밀리에 청년들을 규합해 산틀포에서 횃불을 올려 거사 신호를 전국에 알린다.", next: "y_step2", p: 30, s: -35 }
+                    { text: "일경의 철저한 감시망을 피해 밤마다 인근 마을 유림과 어른들을 찾아가 설득한다.", next: "step2", p: 20, s: -15 },
+                    { text: "비밀리에 청년 동지들을 규합해 매봉산 마루에 봉화를 올려 거사 신호를 사방에 전한다.", next: "step2", p: 35, s: -30 }
                 ]
             },
-            y_step2: {
-                text: "4월 1일 아우내 장날, 수천 명의 군중이 장터에 모였습니다. 당신은 미리 감추어둔 태극기를 사람들에게 나누어주기 시작합니다. 이때 저 멀리서 헌병들이 총칼을 겨누며 진압을 시작하려 합니다.",
+            step2: {
+                text: "장날 아침, 아우내 장터에 수천 명의 인파가 모여들었습니다. 미리 감추어둔 태극기를 가방에서 꺼내어 나눠주는 순간, 일제 헌병들이 칼을 빼 들고 대열을 압박해 들어옵니다.",
                 options: [
-                    { text: "두려움을 떨치고 대열의 맨 앞에 서서 '대한 독립 만세'를 선창하며 전진한다.", next: "y_step3", p: 30, s: -45 },
-                    { text: "헌병들의 시선을 피해 시장 골목으로 우회하며 대열의 붕괴를 막는다.", next: "y_step3", p: 15, s: -15 }
+                    { text: "두려움을 이겨내고 선두에 서서 '대한 독립 만세'를 목놓아 선창하며 나아간다.", next: "step3", p: 30, s: -40 },
+                    { text: "대열의 안전한 후퇴와 태극기 추가 배포를 위해 인파 속에 섞여 대열을 지휘한다.", next: "step3", p: 15, s: -15 }
                 ]
             },
-            y_step3: {
-                text: "결국 체포되어 서대문형무소에 수감되었습니다. 가혹한 고문과 회유가 매일같이 반복됩니다. 간수장이 조용히 다가와 '잘못을 뉘우치면 당장 내보내주겠다'고 제안합니다. 당신의 선택은 무엇입니까?",
+            step3: {
+                text: "결국 체포되어 서대문 형무소 지하 감방에 수감되었습니다. 모진 고문이 반복되는 가운데, 왜인 간수장이 다가와 서류 한 장을 내밀며 '죄를 뉘우친다고 한 줄만 적으면 당장 가석방 시켜주겠다'고 조롱합니다.",
                 options: [
-                    { text: "“나라를 찾으려는 것이 어찌 죄란 말이냐!” 당당하게 소리치며 제안을 거절한다.", next: "ending_clear", p: 30, s: -40 },
-                    { text: "훗날을 도모하기 위해 묵비권을 행사하며 모진 심문을 묵묵히 버텨낸다.", next: "ending_clear", p: 15, s: -20 }
+                    { text: "“나라를 되찾으려는 것이 어찌 죄란 말이냐!” 서류를 찢어버리며 매섭게 꾸짖는다.", next: "clear", p: 35, s: -45 },
+                    { text: "다음 거사를 도모하기 위해 묵비권을 행사하며 긴 고문의 시간을 묵묵히 버텨낸다.", next: "clear", p: 15, s: -20 }
                 ]
             }
         },
         '이선호': {
             start: {
-                text: "1926년 4월, 대한제국의 마지막 황제 순종이 승하하셨습니다. 조선학생과학연구회 회장인 당신은 이 기회를 제2의 3·1운동으로 승화시키기로 결심합니다. 격문(인쇄물)을 대량으로 제작해야 하는데 어디서 인쇄하시겠습니까?",
+                text: "조선 황제 순종의 인산일이 다가옵니다. 조선학생과학연구회 회장인 당신은 격문을 인쇄하여 뿌릴 치밀한 계획을 세웁니다. 발각되면 단체 전체가 무너질 수 있는 상황, 어디서 격문을 인쇄하겠습니까?",
                 options: [
-                    { text: "단체의 비밀 아지트에 수동 인쇄기를 숨겨두고 밤새 동지들과 수만 장을 직접 찍어낸다.", next: "lee_step2", p: 20, s: -20 },
-                    { text: "인쇄소 내부의 뜻있는 동조자에게 은밀히 부탁하여 일괄 인쇄를 시도한다.", next: "lee_step2", p: 15, s: -30 }
+                    { text: "비밀 아지트에 수동 인쇄기를 은밀히 들여와 동지들과 밤을 새워 직접 인쇄한다.", next: "step2", p: 20, s: -20 },
+                    { text: "인쇄소 내부에 숨어있는 뜻이 같은 인쇄 기술 동조자에게 거액을 건네고 위탁한다.", next: "step2", p: 15, s: -35 }
                 ]
             },
-            lee_step2: {
-                text: "6월 10일, 순종 황제의 장례 행렬(인산일)이 종로를 지나갑니다. 수많은 시민이 슬픔에 잠겨 있습니다. 주변에는 사복 경찰들이 깔려있어 숨소리조차 내기 힘든 긴장감이 흐릅니다. 당신은 격문을 던질 타이밍을 노리고 있습니다.",
+            step2: {
+                text: "6월 10일 장례 행렬이 종로 3가를 지나갑니다. 길가엔 슬퍼하는 군중과 이들을 맹렬히 감시하는 사복 경찰들이 깔려있습니다. 품속의 격문 뭉치가 무겁게 느껴집니다.",
                 options: [
-                    { text: "장례 행렬이 단성사 앞을 지나는 바로 그 순간, 격문을 허공에 뿌리며 뛰어 나간다.", next: "lee_step3", p: 35, s: -45 },
-                    { text: "군중이 동요할 때까지 조금 더 기다렸다가 주변 학생들과 동시에 구호를 외친다.", next: "lee_step3", p: 15, s: -15 }
+                    { text: "장례 행렬이 내 앞에 이르는 순간, 격문을 공중에 던지며 선두로 뛰쳐나간다.", next: "step3", p: 35, s: -40 },
+                    { text: "주변 다른 학교 학생 조직들과 약속한 신호가 떨어질 때까지 철저히 타이밍을 기다린다.", next: "step3", p: 20, s: -15 }
                 ]
             },
-            lee_step3: {
-                text: "당신의 선창으로 종로 거리는 순식간에 만세 소리로 가득 찼습니다. 일본 기마경찰들이 군중을 짓밟으며 당신을 체포하려 달려옵니다. 옆에 있던 후배가 경찰의 손을 붙잡으며 당신에게 도망치라고 외칩니다.",
+            step3: {
+                text: "종로 거리가 한순간에 만세 소리로 가득 찹니다. 기마 경찰들이 닥치는 대로 몽둥이를 휘두르며 주동자인 당신을 체포하려 좁혀옵니다. 후배 학생이 경찰의 팔을 붙잡으며 도망치라고 외칩니다.",
                 options: [
-                    { text: "후배를 두고 갈 수 없다. 후배를 구하기 위해 경찰에게 맞선다.", next: "ending_clear", p: 25, s: -35 },
-                    { text: "남은 격문과 계획을 서울의 다른 학교 동지들에게 전달하기 위해 필사적으로 탈출한다.", next: "ending_clear", p: 20, s: -10 }
+                    { text: "후배를 홀로 두고 갈 수 없다. 함께 경찰에게 맞서 스크럼을 짜고 저항한다.", next: "clear", p: 25, s: -35 },
+                    { text: "남은 격문과 투쟁 지침을 전달하기 위해 인파를 헤치고 골목으로 탈출을 시도한다.", next: "clear", p: 20, s: -15 }
                 ]
             }
         },
         '박준채': {
             start: {
-                text: "1929년 10월 30일, 나주역으로 가는 통학 기차 안. 일본인 학생들이 사촌 누이인 박기옥의 댕기머리를 잡아당기며 모욕적인 말을 퍼붓고 있습니다. 편파적인 기차 역무원은 이를 보고도 방관합니다. 당신은 어떻게 하겠습니까?",
+                text: "나주역으로 향하는 통학 열차 안, 일본인 중학생들이 사촌 누이인 박기옥의 댕기머리를 잡아당기며 희롱하고 있습니다. 일본인 역무원은 눈이 마주쳤음에도 모른 척 고개를 돌립니다.",
                 options: [
-                    { text: "“당장 사과해라!” 일본인 학생들의 멱살을 잡고 당당히 항의하며 육탄전을 벌인다.", next: "p_step2", p: 25, s: -25 },
-                    { text: "분하지만 분노를 가라앉히고, 학교에 도착해 광주고보 동지들에게 대책을 요구한다.", next: "p_step2", p: 10, s: -5 }
+                    { text: "“내 누이에게 당장 사과해라!” 분연히 일어나 일본인 학생들의 앞을 가로막고 맞선다.", next: "step2", p: 25, s: -20 },
+                    { text: "이성적으로 분노를 억누르고 광주고보에 도착해 학생 간부들과 정식 항의 대책을 논의한다.", next: "step2", p: 15, s: -5 }
                 ]
             },
-            p_step2: {
-                text: "이 사건으로 조선인 학생과 일본인 학생 간의 감정이 폭발했습니다. 11월 3일, 일제는 명치천황의 생일이라며 축하 행사를 강요하지만, 오늘인 동시에 성독(독립정신)의 날이기도 합니다. 교문 앞은 무장 일경들이 막아서고 있습니다.",
+            step2: {
+                text: "11월 3일, 일제는 명치천황의 생일 축하 행사를 강요하지만, 오늘은 조선의 독립정신을 기리는 날이기도 합니다. 광주고보 교문 앞을 무장 일경들이 가로막아 섰습니다.",
                 options: [
-                    { text: "교문을 부수고 격문을 뿌리며 광주 시내 거리로 뛰어나가 광주여고보 학생들과 합류한다.", next: "p_step3", p: 30, s: -40 },
-                    { text: "일경의 포위망을 분산시키기 위해 소수 정예로 조를 나누어 뒷담을 넘어 시내로 진입한다.", next: "p_step3", p: 15, s: -15 }
+                    { text: "교문을 힘차게 밀치고 격문을 뿌리며 광주여고보 동지들이 있는 시내 중심가로 행진한다.", next: "step3", p: 30, s: -40 },
+                    { text: "포위망을 분산시키기 위해 소수 인원으로 조를 나누어 학교 뒷담을 넘는다.", next: "step3", p: 20, s: -15 }
                 ]
             },
-            p_step3: {
-                text: "광주 시내가 수천 명의 학생 만세 행렬로 뒤덮였습니다! 일경이 총칼을 휘두르며 주동자인 당신을 표적 체포하려 압박해 옵니다. 시위의 동력을 전국으로 전파하려면 행동 지침을 알려야 합니다.",
+            step3: {
+                text: "광주 전체가 학생들의 만세 대열로 붉게 물들었습니다. 총칼을 든 군대까지 출동하여 시위를 진압하려 합니다. 이 타오른 불꽃을 전국에 알리기 위한 마지막 연대 명령을 내려야 합니다.",
                 options: [
-                    { text: "끝까지 대열을 이끌며 격렬히 저항하다 명예롭게 체포의 길을 택한다.", next: "ending_clear", p: 30, s: -40 },
-                    { text: "수배를 피해 장흥, 목포 등 인근 지역 학교로 이동하여 연대 휴학을 조직한다.", next: "ending_clear", p: 20, s: -15 }
-                ]
-            }
-        },
-        // 회생 시스템 데이터
-        '공통': {
-            revive_node: {
-                text: "⚠️ [불굴의 의지 발동] 가혹한 상황 속에서 체력이 다하고 생존력이 0%에 도달했습니다. 하지만 감옥 문 너머로 들려오는 동지들의 숭고한 헌신과 자전적인 결의를 기억해 냅니다. 당신은 결코 여기서 쓰러질 수 없습니다.",
-                options: [
-                    { text: "“대한독립만세!” 마음을 다잡고 불굴의 의지로 다시 일어선다.", next: "FIXED_NEXT", p: 20, s: 50, isRevive: true }
+                    { text: "끝까지 시위 대열의 선봉을 유지하며 당당하게 일경에게 체포되는 길을 택한다.", next: "clear", p: 30, s: -45 },
+                    { text: "인근 목포, 장흥 지역의 학교들로 이동하여 전국적인 동맹 휴학을 강력히 선동한다.", next: "clear", p: 25, s: -15 }
                 ]
             }
         }
     };
 
-    let savedNextScene = ""; // 회생 후 돌아갈 씬 기억 변수
-
-    function updatePage(sceneKey) {
-        // 생존력 0% 검증 및 회생 분기
-        if (survival <= 0 && sceneKey !== 'revive_node' && !sceneKey.startsWith('ending')) {
-            savedNextScene = sceneKey; // 쓰러지기 직전 가려던 방향 저장
-            sceneKey = 'revive_node';
+    function renderScene(key) {
+        if(sScore <= 0 && key !== 'revive' && key !== 'clear') {
+            cachedNext = key;
+            key = 'revive';
         }
 
-        // 인물별 혹은 공통 데이터에서 시나리오 매칭
-        let scene = campaignStories[currentCharacter]?.[sceneKey];
-        if (!scene && sceneKey === 'revive_node') {
-            scene = campaignStories['공통']['revive_node'];
-        }
+        const container = document.getElementById('choices-container');
+        container.innerHTML = "";
 
-        document.getElementById('text-box').innerText = scene.text;
+        // 상태창 업데이트
+        document.getElementById('val-patriot').innerText = pScore + "%";
+        document.getElementById('bar-patriot').style.width = pScore + "%";
+        document.getElementById('val-survive').innerText = sScore + "%";
+        document.getElementById('bar-survive').style.width = sScore + "%";
 
-        // 대시보드 상태 동기화
-        document.getElementById('txt-patriotism').innerText = patriotism + "%";
-        document.getElementById('bar-patriotism').style.width = patriotism + "%";
-        document.getElementById('txt-survival').innerText = survival + "%";
-        document.getElementById('bar-survival').style.width = survival + "%";
+        const textBox = document.getElementById('text-box');
 
-        const choicesBox = document.getElementById('choices-box');
-        choicesBox.innerHTML = '';
-
-        if (scene.options.length > 0) {
-            scene.options.forEach(opt => {
+        if(key === 'revive') {
+            const rText = "⚠️ [불굴의 의지 각성] 고문과 억압으로 체력이 다해 의식을 잃어가던 순간, 벽 너머로 울려 퍼지는 동지들의 뜨거운 만세 소리가 들려옵니다. 당신은 결코 여기서 쓰러질 수 없습니다.";
+            typeEffect(textBox, rText, 15, () => {
                 const btn = document.createElement('button');
-                btn.className = 'btn';
-                btn.innerText = opt.text;
+                btn.className = 'choice-btn';
+                btn.style.borderColor = 'var(--primary)';
+                btn.innerText = "“대한 독립 만세!” 불굴의 의지로 다시 일어선다.";
                 btn.onclick = () => {
-                    if (opt.isRevive) {
-                        survival = opt.s;
-                        patriotism += opt.p;
-                        updatePage(savedNextScene); // 원래 가려던 스토리로 복귀
-                    } else {
-                        patriotism = Math.min(100, Math.max(0, patriotism + (opt.p || 0)));
-                        survival = Math.min(100, Math.max(0, survival + (opt.s || 0)));
-                        updatePage(opt.next);
-                    }
+                    sScore = 50; pScore += 15;
+                    renderScene(cachedNext);
                 };
-                choicesBox.appendChild(btn);
+                container.appendChild(btn);
             });
-        } else {
-            // 결과창 및 성찰 노트 출력
-            const noteDiv = document.createElement('div');
-            noteDiv.style.marginTop = "20px";
-            noteDiv.innerHTML = `
-                <hr style="border: 1px solid #333; margin: 20px 0;">
-                <h3 style="color:#ffd23f;">✍️ 4단계: 배움 노트 작성</h3>
-                <p style="font-size:14px; color:#aaa;">오늘 추체험을 통해 느낀 점과 나만의 다짐 명언을 남겨보세요.</p>
-                <textarea rows="3" style="width:100%; background:#222; color:#fff; border:1px solid #444; border-radius:6px; padding:10px; box-sizing:border-box;" placeholder="역사적 결단을 마주하며 느낀 심정을 적어보세요..."></textarea>
-                <button class="btn system-btn" style="margin-top:15px;" onclick="restartGame()">다른 역사적 인물 선택하기</button>
-            `;
-            choicesBox.appendChild(noteDiv);
+            return;
         }
-    }
 
-    function restartGame() { showScreen('selection-screen'); }
-</script>
-
-</body>
-</html>
+        if(key === 'clear') {
+            const cText = `축하합니다. 역사적 결단의 순간들을 끝까지 이수하셨습니다. 당신의 뜨
