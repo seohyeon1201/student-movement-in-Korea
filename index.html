@@ -32,7 +32,6 @@
             position: relative;
         }
 
-        /* 클릭 이펙트 */
         .click-effect {
             position: absolute;
             border: 2px solid var(--primary);
@@ -82,7 +81,6 @@
             height: fit-content;
         }
 
-        /* 타이틀 & 인트로 */
         .main-title { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 10px; line-height: 1.3; }
         .sub-title { font-size: 14px; color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; }
         
@@ -91,18 +89,16 @@
             background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; border-left: 4px solid var(--primary);
         }
 
-        .screen { display: none; opacity: 0; transition: opacity 0.4s ease; }
+        .screen { display: none; opacity: 0; transition: opacity 0.3s ease; }
         .screen.active { display: block; }
         .screen.fade-in { opacity: 1; }
 
-        /* 공통 버튼 */
         .btn-primary {
             background: var(--primary); color: #fff; font-size: 16px; font-weight: 700;
             padding: 16px 32px; border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s;
         }
         .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,74,74,0.3); }
 
-        /* 캐릭터 선택 카드 */
         .card-grid { display: flex; gap: 16px; margin-top: 30px; }
         .char-card {
             flex: 1; background: var(--bg-input); border: 1px solid var(--border); border-radius: 14px;
@@ -113,7 +109,6 @@
         .char-meta { font-size: 13px; color: var(--accent); margin-bottom: 12px; }
         .char-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
 
-        /* 대시보드 헤더 */
         .game-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
         .status-group { display: flex; gap: 24px; }
         .gauge-container { width: 120px; }
@@ -122,10 +117,8 @@
         .gauge-fill { height: 100%; background: var(--primary); width: 50%; transition: width 0.4s ease; }
         .gauge-fill.survival { background: #10ac84; }
 
-        /* 텍스트 박스 (타이핑 연출) */
         #text-box { font-size: 17px; line-height: 1.8; color: #fff; min-height: 100px; margin-bottom: 40px; }
 
-        /* 선택지 버튼 리스트 */
         .choice-btn {
             display: block; width: 100%; background: var(--bg-input); border: 1px solid var(--border);
             color: var(--text-main); padding: 18px 24px; border-radius: 12px; font-size: 15px; text-align: left;
@@ -133,7 +126,6 @@
         }
         .choice-btn:hover { border-color: var(--accent); background: #25293e; transform: translateX(4px); }
 
-        /* 배움 노트 양식 */
         .notebook { background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-top: 20px; }
         .notebook h3 { margin-top: 0; color: var(--accent); }
         .notebook textarea {
@@ -141,7 +133,6 @@
             color: #fff; padding: 14px; box-sizing: border-box; font-size: 14px; resize: none; margin: 15px 0;
         }
 
-        /* 오른쪽 정보창 텍스트 정돈 */
         .info-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
         .info-list { padding-left: 20px; color: var(--text-muted); font-size: 14px; line-height: 1.8; }
         .info-list li { margin-bottom: 10px; }
@@ -158,6 +149,7 @@
 <div id="main-layout">
     <div id="game-container">
         
+        <!-- 인트로 -->
         <div id="screen-intro" class="screen active fade-in">
             <div class="sub-title">History 추체험 시뮬레이션</div>
             <div class="main-title">그날 밤, 우리들의 배움은<br>거리에서 횃불이 되었다</div>
@@ -167,9 +159,10 @@
             <button class="btn-primary" onclick="navigate('screen-select')">시작하기</button>
         </div>
 
+        <!-- 캐릭터 선택 -->
         <div id="screen-select" class="screen">
             <div class="main-title" style="font-size: 24px;">인물 선택</div>
-            <div style="color: var(--text-muted); font-size: 14px;">추체험할 당시의 인물을 선택하세요.</div>
+            <div style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">추체험할 당시의 인물을 선택하세요.</div>
             
             <div class="card-grid">
                 <div class="char-card" onclick="selectChar('유관순')">
@@ -199,6 +192,7 @@
             </div>
         </div>
 
+        <!-- 플레이 화면 -->
         <div id="screen-play" class="screen">
             <div class="game-header">
                 <div>
@@ -222,6 +216,7 @@
 
     </div>
 
+    <!-- 우측 안내 레이아웃 -->
     <div id="info-container">
         <div class="info-title">💡 학습 안내</div>
         <ul class="info-list">
@@ -237,58 +232,7 @@
     let sScore = 100;
     let selectedHero = "";
     let cachedNext = "";
-
-    // 화면 클릭 파장 효과
-    document.addEventListener('click', (e) => {
-        const rip = document.createElement('div');
-        rip.className = 'click-effect';
-        document.body.appendChild(rip);
-        rip.style.left = `${e.pageX}px`;
-        rip.style.top = `${e.pageY}px`;
-        rip.addEventListener('animationend', () => rip.remove());
-    });
-
-    // 부드러운 화면 전환
-    function navigate(id) {
-        const current = document.querySelector('.screen.active');
-        const target = document.getElementById(id);
-        if(current) {
-            current.classList.remove('fade-in');
-            setTimeout(() => {
-                current.classList.remove('active');
-                target.classList.add('active');
-                setTimeout(() => target.classList.add('fade-in'), 50);
-            }, 300);
-        } else {
-            target.classList.add('active');
-            setTimeout(() => target.classList.add('fade-in'), 50);
-        }
-    }
-
-    function selectChar(name) {
-        selectedHero = name;
-        pScore = 50; sScore = 100;
-        document.getElementById('display-name').innerText = name;
-        document.getElementById('display-era').innerText = name === '유관순' ? '1919 3·1운동' : name === '이선호' ? '1926 6·10만세운동' : '1929 광주학생독립운동';
-        navigate('screen-play');
-        setTimeout(() => renderScene('start'), 350);
-    }
-
-    // 바이브코딩 감성의 타이핑 효과 연출
-    function typeEffect(element, text, delay = 20, callback) {
-        element.innerHTML = "";
-        let i = 0;
-        function typing() {
-            if (i < text.length) {
-                element.innerHTML += text.charAt(i);
-                i++;
-                setTimeout(typing, delay);
-            } else if (callback) {
-                callback();
-            }
-        }
-        typing();
-    }
+    let isTyping = false; // 중복 렌더링 방지 락
 
     const stories = {
         '유관순': {
@@ -362,22 +306,89 @@
         }
     };
 
+    // 화면 클릭 파장 효과
+    document.addEventListener('click', (e) => {
+        const rip = document.createElement('div');
+        rip.className = 'click-effect';
+        document.body.appendChild(rip);
+        rip.style.left = `${e.pageX}px`;
+        rip.style.top = `${e.pageY}px`;
+        rip.addEventListener('animationend', () => rip.remove());
+    });
+
+    // 부드러운 화면 전환
+    function navigate(id) {
+        const current = document.querySelector('.screen.active');
+        const target = document.getElementById(id);
+        if(current) {
+            current.classList.remove('fade-in');
+            setTimeout(() => {
+                current.classList.remove('active');
+                target.classList.add('active');
+                setTimeout(() => target.classList.add('fade-in'), 50);
+            }, 300);
+        } else {
+            target.classList.add('active');
+            setTimeout(() => target.classList.add('fade-in'), 50);
+        }
+    }
+
+    function updateGauges() {
+        document.getElementById('val-patriot').innerText = pScore + "%";
+        document.getElementById('bar-patriot').style.width = pScore + "%";
+        document.getElementById('val-survive').innerText = sScore + "%";
+        document.getElementById('bar-survive').style.width = sScore + "%";
+    }
+
+    function selectChar(name) {
+        selectedHero = name;
+        pScore = 50; 
+        sScore = 100;
+        
+        document.getElementById('display-name').innerText = name;
+        document.getElementById('display-era').innerText = name === '유관순' ? '1919 3·1운동' : name === '이선호' ? '1926 6·10만세운동' : '1929 광주학생독립운동';
+        
+        // 게이지 초기화 강제 적용
+        updateGauges();
+        
+        // 화면 전환 후 타이핑 딜레이 최적화
+        navigate('screen-play');
+        setTimeout(() => {
+            renderScene('start');
+        }, 400);
+    }
+
+    function typeEffect(element, text, delay = 20, callback) {
+        element.innerHTML = "";
+        let i = 0;
+        isTyping = true;
+        
+        function typing() {
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(typing, delay);
+            } else {
+                isTyping = false;
+                if (callback) callback();
+            }
+        }
+        typing();
+    }
+
     function renderScene(key) {
+        const container = document.getElementById('choices-container');
+        const textBox = document.getElementById('text-box');
+        
+        container.innerHTML = "";
+
+        // 사망 분기 체크
         if(sScore <= 0 && key !== 'revive' && key !== 'clear') {
             cachedNext = key;
             key = 'revive';
         }
 
-        const container = document.getElementById('choices-container');
-        container.innerHTML = "";
-
-        // 상태창 업데이트
-        document.getElementById('val-patriot').innerText = pScore + "%";
-        document.getElementById('bar-patriot').style.width = pScore + "%";
-        document.getElementById('val-survive').innerText = sScore + "%";
-        document.getElementById('bar-survive').style.width = sScore + "%";
-
-        const textBox = document.getElementById('text-box');
+        updateGauges();
 
         if(key === 'revive') {
             const rText = "⚠️ [불굴의 의지 각성] 고문과 억압으로 체력이 다해 의식을 잃어가던 순간, 벽 너머로 울려 퍼지는 동지들의 뜨거운 만세 소리가 들려옵니다. 당신은 결코 여기서 쓰러질 수 없습니다.";
@@ -387,7 +398,8 @@
                 btn.style.borderColor = 'var(--primary)';
                 btn.innerText = "“대한 독립 만세!” 불굴의 의지로 다시 일어선다.";
                 btn.onclick = () => {
-                    sScore = 50; pScore += 15;
+                    sScore = 50; 
+                    pScore = Math.min(100, pScore + 15);
                     renderScene(cachedNext);
                 };
                 container.appendChild(btn);
@@ -396,4 +408,38 @@
         }
 
         if(key === 'clear') {
-            const cText = `축하합니다. 역사적 결단의 순간들을 끝까지 이수하셨습니다. 당신의 뜨
+            const cText = `축하합니다. 역사적 결단의 순간들을 끝까지 이수하셨습니다. 당신의 뜨거운 외침은 훗날 대한민국 독립의 주춧돌이 되었습니다.`;
+            typeEffect(textBox, cText, 15, () => {
+                const note = document.createElement('div');
+                note.className = 'notebook';
+                note.innerHTML = `
+                    <h3>✍️ 성찰 배움 노트</h3>
+                    <p style="font-size:13.5px; color:var(--text-muted);">추체험을 통해 느낀 점과 나만의 다짐 한 줄을 기록해보세요.</p>
+                    <textarea rows="3" placeholder="내용을 입력하세요..."></textarea>
+                    <button class="btn-primary" style="width:100%;" onclick="navigate('screen-select')">다른 인물 체험하기</button>
+                `;
+                container.appendChild(note);
+            });
+            return;
+        }
+
+        const currentData = stories[selectedHero][key];
+        typeEffect(textBox, currentData.text, 15, () => {
+            currentData.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.innerText = opt.text;
+                btn.onclick = () => {
+                    if (isTyping) return; // 타이핑 중 클릭 방지
+                    pScore = Math.min(100, Math.max(0, pScore + opt.p));
+                    sScore = Math.min(100, Math.max(0, sScore + opt.s));
+                    renderScene(opt.next);
+                };
+                container.appendChild(btn);
+            });
+        });
+    }
+</script>
+
+</body>
+</html>
